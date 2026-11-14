@@ -1,76 +1,35 @@
-# [Challenge 2026][Cohort 3][Track 2] [Proposal] UnvibeCode Pulse & Blast Radius — Continuous Developer Retention Engine
-
-**Track:** Track 2 — Developer Adoption & Repeat Usage  
-**Author:** AI Engineering Candidate  
-**Target Repository:** `FinanceFlash/unvibecode`  
+# Track 2 Proposal: UnvibeCode Blast Radius & PR Impact Engine
+**Submitted by:** Aayush Mishra (GitHub: @Aayush-Mishra-11)
 
 ---
 
-### Executive Summary
+### 1. Recommended Approach: UnvibeCode Blast Radius (Pre-Push & PR Action)
 
-UnvibeCode has successfully achieved initial trial by over 1,000+ developers due to its ability to reverse-engineer complex codebases into structured Business Workflow Maps and risk reports.
+My recommendation is to turn UnvibeCode from a heavy, one-time full codebase scanner into an everyday **"Blast Radius" check on Git commits and Pull Requests**.
 
-However, UnvibeCode currently suffers from the **"Onboarding Utility Trap"**:
-* Developers run UnvibeCode once when exploring a new codebase or conducting an architecture audit.
-* Once the mental model is established, they have no recurring reason to run a heavy, multi-minute, full-repository scan again.
-* Furthermore, if UnvibeCode is integrated merely as an invisible backend tool for LLM assistants (MCP), developers interact with Cursor or Claude, completely unaware that UnvibeCode powers the intelligence.
+When I ran UnvibeCode on my local repository, generating the full report was great for the initial walkthrough. But once I understood the structure, I had no reason to run a full 2-minute review again while actively writing code. 
 
-**The Solution: UnvibeCode Pulse & Blast Radius Engine.**  
-Instead of positioning UnvibeCode as a periodic, heavy full-codebase scanner, we introduce an incremental, developer-native loop:
-1. **The Daily Trigger (Every Git Commit & PR):** Developers edit 2–5 files per day. UnvibeCode runs an instant, zero-LLM-cost **Incremental AST Diff** ($<800$ms) calculating the exact **Business Blast Radius** of their changes.
-2. **Everyday Workflow Integration (Git Hook + GitHub Action + IDE Sidebar):** A pre-push hook blocks accidental breaks of critical business workflows, while a branded GitHub Action comments directly on Pull Requests with an interactive visual impact card.
-3. **Product Recognition Moat:** UnvibeCode becomes the visible, team-wide standard for "Change Safety" via branded GitHub PR checks, visual SVG badges, and interactive IDE inspection panels.
+Instead of waiting for a developer to clone a new repository every 6 months, UnvibeCode should run automatically when developers make daily changes:
+- **Local Hook:** A lightweight `unvibecode diff` command (run via a git `pre-push` hook) that takes only the modified files from `git diff`, checks the AST against a locally cached graph, and instantly shows which business workflows are touched in under 1 second.
+- **Branded GitHub PR Action:** A GitHub Action that comments on open PRs with an interactive visual impact summary: *"UnvibeCode Blast Radius: 2 business workflows affected, 0 breaking risks detected"*.
 
 ---
 
-### 1. Root Cause Analysis: Why Developers Churn (10 Points)
+### 2. Supporting Points
 
-| Dimension | Current UnvibeCode Experience | Developer Reality & Pain Point |
-| :--- | :--- | :--- |
-| **Trigger Frequency** | "I just cloned an unfamiliar 100k-line repo." | Happens once every 3–6 months per engineer. |
-| **Execution Cost** | Full-repo AST parsing + LLM analysis (30s – 3 mins, high token usage). | Impractical to run during fast-paced active coding. |
-| **Feedback Latency** | Static HTML report output (`00_unvibecode_results.html`) viewed in a browser tab. | Browser tab is closed after 10 minutes and never reopened. |
-| **Team Visibility** | Isolated to the local terminal of one engineer. | No shared team value; peers never see the findings. |
-| **AI Assistant Erosion** | Headless MCP server queried silently in background. | Cursor/Claude takes 100% of the brand credit; UnvibeCode is forgotten. |
+1. **Fits the natural daily habit loop without performance friction:**
+   Running a full repository analysis on every commit is impossible—it takes 30 to 120 seconds and uses too many tokens. By computing the AST diff only on the 2–3 files the developer just edited, the check finishes in under 800ms with zero LLM API calls for the deterministic graph traversal. Developers get instant feedback before pushing code: *"Did my change to `auth.py` accidentally affect the checkout workflow 3 modules away?"*
 
----
+2. **Solves the brand recognition problem (avoids the invisible MCP trap):**
+   If UnvibeCode only works as a hidden MCP server inside Cursor or Claude, developers will give all the credit to Cursor and forget UnvibeCode exists. By putting a distinct UnvibeCode comment and SVG status check right on the GitHub Pull Request, every engineer and reviewer on the team sees the UnvibeCode name and interactive diagram every single day during code reviews.
 
-### 2. Core Architecture: Incremental Blast Radius ($O(\Delta V)$) (20 Points)
-
-Running a full repository scan on every commit is computationally impossible and cost-prohibitive. The breakthrough lies in **Incremental AST Differencing with Graph Adjacency Propagation**:
-
-1. **Local Graph Cache Database (`.unvibecode/cache.db`):** Initialized once via `unvibecode init`, storing precomputed symbol hashes, caller/callee adjacency lists, and business workflow entrypoints.
-2. **Incremental Differencing Algorithm:**
-   * Reads `git diff --name-only HEAD~1` to isolate modified files.
-   * Parses **only** modified files into AST deltas.
-   * Traverses the cached graph up to $k=3$ hops to determine the affected business workflows:
-     $$\text{Blast Radius} = \{ w \in \text{Workflows} \mid \exists s \in \Delta \text{Symbols}, s \in \text{Path}(w) \}$$
-   * **Performance:** Execution finishes in $<500$ms with **ZERO external LLM API calls** for deterministic graph traversal.
+3. **Creates a continuous reason to return:**
+   Full repository onboarding only happens once. But writing code, reviewing pull requests, and checking for breaking changes happens 5 to 10 times a day. Tying UnvibeCode's graph intelligence to PR impact analysis turns it from a "one-time audit utility" into a daily code-safety companion.
 
 ---
 
-### 3. Everyday Workflow Integration (25 Points)
+### 3. Implementation Plan
 
-* **Touchpoint 1: Git Hook (`pre-push` / `pre-commit`):** Installed with `unvibecode hook install`. Intercepts git push to warn if a change touches a high-risk workflow (e.g. Stripe checkout).
-* **Touchpoint 2: GitHub Action PR Bot:** Posts a branded comment on Pull Requests displaying the visual Blast Radius flowchart and affected workflows.
-* **Touchpoint 3: IDE Sidebar (VS Code & Cursor):** Real-time editor Code Lens showing upstream callers and downstream business impact directly above function definitions.
-
----
-
-### 4. Product Recognition Architecture (10 Points)
-
-* **UnvibeCode Certified PR Badge:** Dynamic SVG badges embedded in PR checks and repository README files.
-* **Branded Standalone Canvas (`unvibecode view`):** Localhost interactive visualizer with prominent UnvibeCode navigation and export controls.
-* **Editor Code Lens:** Explicit inline attribution (`UnvibeCode: Part of [Checkout Workflow]`).
-
----
-
-### 5. Quantitative 30-Day Retention Model (35 Points)
-
-| Metric | Without Pulse | With UnvibeCode Pulse & Blast Radius | Impact |
-| :--- | :---: | :---: | :---: |
-| **Execution Trigger** | Monthly manual run | Daily commit/push reflex | **$90\times$ increase** |
-| **Feedback Latency** | 120 seconds | $<800$ milliseconds | **$150\times$ faster** |
-| **Token Cost / Invocation**| 100,000+ tokens | 0 tokens (local AST) | **100% free daily loop** |
-| **W4 Retention Target** | $<5\%$ | $>65\%$ weekly active repos | **Sustainable habit** |
-
+1. **Build first:** Implement a `.unvibecode/cache.db` local graph cache and an `unvibecode diff` CLI command that parses `git diff --name-only` to identify affected downstream workflows in <1 second.
+2. **Where to integrate:** Package it into a one-command git hook (`unvibecode hook install`) and a reusable GitHub Action (`unvibecode/blast-radius-action`) that posts PR impact comments.
+3. **How to test repeat usage:** Track weekly active repositories in CI running the action on PRs, and measure whether developers click the workflow links in PR comments or fix flagged workflow breaks before merging.
